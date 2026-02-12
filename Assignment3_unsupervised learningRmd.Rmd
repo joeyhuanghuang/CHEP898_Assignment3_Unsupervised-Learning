@@ -1,0 +1,46 @@
+---
+title: "Assignment3_Unsupervised Learning"
+author: "Daoyi Huang"
+date: "2026-02-12"
+output: html_document
+---
+
+
+<strong><u>1. Dataset Exploration</u></strong>      
+**•Load and examine the Can Path Student Dataset (Not Imputed).**             
+**•Conduct an initial exploratory data analysis (EDA) to understand key features and relationships.**     
+
+
+
+
+
+<strong><u>2. Baseline PCA Model</u></strong>   
+**•Implement a baseline PCA model with default parameters.**      
+**•Evaluate the model using appropriate metrics.**       
+
+
+
+
+
+
+<strong><u>3. Cluster Selection Tuning</u></strong>      
+**•Identify key decisions related to cluster selection.**        
+**•Use techniques to find the optimal configuration.**        
+**•Document the process using an RMarkdown File.**       
+
+
+
+
+
+<strong><u>4. PCA Regression Model Comparisons</u></strong>     
+**•Conduct a PCA regression using your original cluster selection (Part 2 - Baseline PCA Model) and your tuned model (Part 3 - Cluster Select):**      
+**•Use BMI as the outcome variable for the PCA regression. This will Analyze differences in performance using quantitative metrics and discuss possible reasons for the results.**       
+
+
+
+
+
+
+<strong><u>5. Feature Importance Analysis</u></strong>      
+**•Extract and interpret feature importance scores from the PCA regression from the best fitting model.**        
+**•Visualize the top contributing features and discuss their relevance to the dataset.**    
