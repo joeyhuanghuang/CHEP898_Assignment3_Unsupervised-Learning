@@ -8,8 +8,35 @@ output: html_document
 
 <strong><u>1. Dataset Exploration</u></strong>      
 **•Load and examine the Can Path Student Dataset (Not Imputed).**             
-**•Conduct an initial exploratory data analysis (EDA) to understand key features and relationships.**     
+**•Conduct an initial exploratory data analysis (EDA) to understand key features and relationships.**       
 
+load the library 
+import the can_path_data dataset
+```{r setup}
+library(tidyverse)
+library(tidymodels)
+library(reportRmd)
+library(sjPlot)
+library(plotly)
+library(psych)
+library(parallel)
+library(finalfit)
+library(gtsummary)
+library(mlbench)
+library(vip)
+library(rsample)
+library(tune)
+library(recipes)
+library(yardstick)
+library(parsnip)
+library(glmnet)
+library(themis)
+library(corrr)
+library(performance)
+library(utils)
+library(see)
+data_canpath<-read.csv("/Users/xiehuangbao/Library/CloudStorage/OneDrive-UniversityofSaskatchewan/Study at USask/CHEP898_Machine Learning/can_path_data.csv")
+```
 
 
 
