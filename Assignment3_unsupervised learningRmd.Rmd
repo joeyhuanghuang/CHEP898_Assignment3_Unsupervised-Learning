@@ -6,17 +6,17 @@ output: html_document
 ---
 
 
-<strong><u>1. Dataset Exploration</u></strong>      
-**•Load and examine the Can Path Student Dataset (Not Imputed).**             
-**•Conduct an initial exploratory data analysis (EDA) to understand key features and relationships.**       
+# 1. Dataset Exploration</u></strong>      
+## •Load and examine the Can Path Student Dataset (Not Imputed).  
+## •Conduct an initial exploratory data analysis (EDA) to understand key features and relationships.      
 
 In order to predict BMI, we need to identify the potential variables.  
 •First step: Data cleaning
 •Second step: Identify the continuous and categorical variables
 •Third step: Check the correlation between continuous variables. If there are too mang continuos variables identified and there is multicollinearity existed, in order to pass the assumption of the absence of multicollinearity for linear regression model, we need to implement Principal Component Analysis (PCA) to reduce the dimension for the continuous variables and remove the multicollinearity.
 
-load the library 
-Import the can_path_data dataset
+**load the library **  
+**Import the can_path_data dataset**  
 ```{r setup}
 library(tidyverse)
 library(tidymodels)
@@ -46,7 +46,7 @@ data_canpath<-read.csv("/Users/xiehuangbao/Library/CloudStorage/OneDrive-Univers
 ```{r}
 glimpse(data_canpath)
 ```
-###There are 440 variables identified, including "ID".   
+There are 440 variables identified, including "ID".   
 
 ```{r}
 sum(duplicated(data_canpath))
@@ -54,7 +54,7 @@ sum(duplicated(data_canpath))
 There is no duplicated data existed in this "canpath" dataset.  
 
 
-Identify the candidates of continuous variables:  
+**Identify the candidates of continuous variables: **   
 There are 1 outcome variables (BMI) and 34 continuous variables identified (including 1 outcome variable: PM_BMI_SR):   
 -PM_BMI_SR (outcome variable) ~ BMI    
 -SDC_AGE_CALC ~ Participant's age at questionnaire completion    
@@ -94,7 +94,7 @@ There are 1 outcome variables (BMI) and 34 continuous variables identified (incl
 
 Since we aare interested in the prediction of BMI for all the gender, we will exclude 7 variables only related to female, which are "WH_MENSTRUATION_AGE", "WH_CONTRACEPTIVES_AGE", "WH_CONTRACEPTIVES_DURATION", "WH_PREG_FIRST_AGE", "WH_PREG_LAST_AGE", "WH_MENOPAUSE_AGE", and "WH_HYSTERECTOMY_AGE".   
 
-Identify the candidates of categorical variables: There are 6 categorical variables.
+**Identify the candidates of categorical variables: There are 6 categorical variables.**    
 -SDC_INCOME ~ income level
 -SDC_GENDER ~ gender
 -SMK_CIG_EVER ~ smoking consumption
@@ -175,7 +175,7 @@ Now we have 1 outcome variable (BMI), 24 continuous independent variables, and 7
 -ALC_CUR_FREQ ~ alcohol consumption
 -DIS_DIAB_EVER ~ diabetes status
 -DIS_HBP_EVER ~ hypertension status
--DIS_ENDO_HB_CHOL_EVER ~ yperlipidemia status
+-DIS_ENDO_HB_CHOL_EVER ~ hyperlipidemia status
 
 
 Keep the candidates for the above continuous variables and categorical variables.   
@@ -248,14 +248,14 @@ data_canpath <- data_canpath %>%
 data_canpath_clean <- drop_na(data_canpath)
 
 rm_covsum(data=data_canpath_clean, 
-covs=c('PM_BMI_SR','SDC_AGE_CALC', 'SDC_EDU_LEVEL_AGE', 'DIS_ARTHRITIS_AGE', 'SLE_TIME', 'PSE_CHILDHOOD_DURATION', 'PSE_ADULT_HOME_DURATION', 'PSE_ADULT_WRK_DURATION','PA_WALK_TIME', 'PA_TOTAL_MOD_SHORT', 'PA_TOTAL_WALK_SHORT', 'PA_TOTAL_SHORT', 'PA_SIT_TIME_WKDAY', 'PA_SIT_TIME_WKEND', 'PA_TOTAL_SIT_TIME', 'PA_SIT_AVG_TIME_DAY', 'PM_STAND_HEIGHT_SR_AVG', 'PM_WEIGHT_SR_AVG', 'PM_HIP_SR_AVG', 'PM_WAIST_SR_AVG', 'PM_WAIST_HIP_RATIO_SR', 'NUT_VEG_QTY', 'NUT_FRUITS_QTY', 'NUT_JUICE_QTY', 'ALC_CUR_FREQ', "ALC_CUR_FREQ", "SDC_INCOME", "SDC_GENDER", "SMK_CIG_EVER", "DIS_DIAB_EVER", "DIS_HBP_EVER", "DIS_ENDO_HB_CHOL_EVER"))
+covs=c('PM_BMI_SR','SDC_AGE_CALC', 'SDC_EDU_LEVEL_AGE', 'DIS_ARTHRITIS_AGE', 'SLE_TIME', 'PSE_CHILDHOOD_DURATION', 'PSE_ADULT_HOME_DURATION', 'PSE_ADULT_WRK_DURATION','PA_WALK_TIME', 'PA_TOTAL_MOD_SHORT', 'PA_TOTAL_WALK_SHORT', 'PA_TOTAL_SHORT', 'PA_SIT_TIME_WKDAY', 'PA_SIT_TIME_WKEND', 'PA_TOTAL_SIT_TIME', 'PA_SIT_AVG_TIME_DAY', 'PM_STAND_HEIGHT_SR_AVG', 'PM_WEIGHT_SR_AVG', 'PM_HIP_SR_AVG', 'PM_WAIST_SR_AVG', 'PM_WAIST_HIP_RATIO_SR', 'NUT_VEG_QTY', 'NUT_FRUITS_QTY', 'NUT_JUICE_QTY', 'ALC_CUR_FREQ', "SDC_INCOME", "SDC_GENDER", "SMK_CIG_EVER", "DIS_DIAB_EVER", "DIS_HBP_EVER", "DIS_ENDO_HB_CHOL_EVER"))
 
 summary(data_canpath_clean$ALC_CUR_FREQ)  
 ```
 
-After deleting the missing data, there are 761 samples left in our dataset.
+After deleting the missing data, there are 761 samples left in our dataset.   
 
-Correlation check:
+**Correlation check:**    
 
 ```{r}
 data_canpath_clean %>% 
@@ -270,33 +270,159 @@ From the correlation plot, we found BMI is positive moderate correlated with wei
 From the correlation table, we also found there are multicollinearity existed between the continuous independent variables. So for the sake of practice, we still implement PCA.
 
 
-<strong><u>2. Baseline PCA Model</u></strong>   
-**•Implement a baseline PCA model with default parameters.**      
-**•Evaluate the model using appropriate metrics.**       
+# 2. Baseline PCA Model</u></strong>    
+## •Implement a baseline PCA model with default parameters.        
+## •Evaluate the model using appropriate metrics.         
+**Recipe**      
+```{r}
+pca_recipe <- recipe(~., data = data_canpath_clean) %>%
+  update_role(ID, PM_BMI_SR, SDC_INCOME, SDC_GENDER, SMK_CIG_EVER, DIS_DIAB_EVER, DIS_HBP_EVER, DIS_ENDO_HB_CHOL_EVER, new_role = "id") %>%
+  step_scale(all_predictors()) %>%
+  step_center(all_predictors()) %>%
+  step_pca(all_predictors(), id = "pca_id")
+
+pca_recipe
+```
+
+
+**Prepare**     
+```{r}
+pca_prepared <- prep(pca_recipe)
+
+pca_prepared
+```
+
+**Bake**    
+```{r}
+pca_baked <- bake(pca_prepared, data_canpath_clean)
+pca_baked
+```
+
+The above table shows the score for each observation. The score stands for the possision for each observation in each principal component.
+
+**Relationship between components**   
+```{r}
+pca_corr <- pca_baked |> select(-c(ID, PM_BMI_SR))
+
+pca_corr %>% 
+  correlate() %>%
+  rearrange() %>%
+  shave()  %>%
+  rplot(print_cor=TRUE)
+```
+
+From the above correlation plot for each component, there is no correlation between those 5 components.
+
+
+# 3. Cluster Selection Tuning        
+## •Identify key decisions related to cluster selection       
+## •Use techniques to find the optimal configuration         
+## •Document the process using an RMarkdown File      
+
+
+**Component loadings**  
+```{r}
+pca_variables <- tidy(pca_prepared, id = "pca_id", type = "coef")
+
+ggplot(pca_variables) +
+  geom_point(aes(x = value, y = terms, color = component))+
+  labs(color = NULL) +
+  geom_vline(xintercept=0) + 
+  geom_vline(xintercept=-0.2, linetype = 'dashed') + 
+  geom_vline(xintercept=0.2, linetype = 'dashed') + 
+  facet_wrap(~ component) +
+  theme_minimal()
+ggsave("pca_loadings.pdf", width = 12, height = 14)
+```
+**Note:** The above PCA loading plot in the R is very difficult to figure out the variables. However, we can save the plot as PDF and we can identify the factors easily.
+
+**Interpretation for the PCA loading plot:**  
+•PCA1: There are 4 physical activity variables (PA_WALK_TIME, PA_TOTAL_WALK_SHORT, PA_TOTAL_SHORT, PA_TOTAL_MOD_SHORT) with loading value greater than 0.2. There are other 4 physical activity variables (PA_TOTAL_SIT_TIME, PA_SIT_TIME_WKEND, PA_SIT_TIME_WKDAYPA_SIT_AVG_TIME_DAY) with loading value below -0.2. This indicates the physical activity variables contribute most in principal component 1.     
+**We can define principal component 1 as physical activity component.**   
+
+•PCA2: There are 9 variables with loading value over than 0.2. They are:    
+-age  
+-weight   
+-waist    
+-passive smoking exposure inside participant's home during adulthood    
+-passive smoking exposure during adulthood at work      
+-physical activity: walk time perday and walk time short    
+-Age of the participant at first diagnosis of arthritis     
+This component is a combination of different categories of variables.    
+**We can define principal component 2 as age-lifestyle component.**   
+
+•PCA3: There are 7 variables with loading value over than 0.2 or below -0.2. They are:     
+-weight     
+-waist      
+-hip circumference      
+**We can define principal component 2 as physical measurement.**     
+
+•PCA4: There are 3 variables with loading value over than 0.2, which are greater than their loading value in component 2. They are:     
+-age  
+-passive smoking exposure inside participant's home during adulthood    
+-passive smoking exposure during adulthood at work        
+-walk perday
+-walk short
+-Age of the participant at first diagnosis of arthritis  
+-Alcohol consumption frequency
+**Since there are mixed variables in component 4, it is hard to give it a theme. I just call it mixed factor**   
+  
+
+**Variance explained by components**  
+```{r}
+pca_variances <- tidy(pca_prepared, id = "pca_id", type = "variance")
+
+pca_variance <- pca_variances |> filter(terms == "percent variance")
+pca_variance$component <- as.factor(pca_variance$component)
+pca_variance$comp <- as.numeric(pca_variance$component)
+
+ggplot(pca_variance, aes(x = component, y = value, group = 1, color = component)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Principal Components", y = "Variance explained (%)") +
+  theme_minimal()
+```
+
+**Based on the above Variance explained by components plot, using the elbow method, I will keep 4 components in my PCA model.**    
+
+
+**Cumulative percent variance**   
+```{r}
+pca_cummul_variance <- pca_variances |> filter(terms == "cumulative percent variance")
+pca_cummul_variance$component <- as.factor(pca_cummul_variance$component)
+pca_cummul_variance$comp <- as.numeric(pca_cummul_variance$component)
+
+ggplot(pca_cummul_variance, aes(x = component, y = value, group = 1, color = component)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Principal Components", y = "Cummulative Variance explained (%)") +
+  theme_minimal()
+```
+
+Based on the above cumulative percent variance plot, 4 components can only explain 44% of variation, which is not good. The reason might be that we included lots variables which are not correlated or weak correlated to other variables. For the sake of practice, we still continue.    
+
+
+**In summary, I kept 4 components. They are:**    
+•PCA1: physical activity component      
+
+•PCA2: age-lifestyle component      
+
+•PCA3: physical measurement        
+
+•PCA4: mixed factor(hard to give it a theme)       
+
+
+
+
+# 4. PCA Regression Model Comparisons      
+## •Conduct a PCA regression using your original cluster selection (Part 2 - Baseline PCA Model) and your tuned model (Part 3 - Cluster Select)         
+## •Use BMI as the outcome variable for the PCA regression. This will Analyze differences in performance using quantitative metrics and discuss possible reasons for the results.           
 
 
 
 
 
 
-<strong><u>3. Cluster Selection Tuning</u></strong>      
-**•Identify key decisions related to cluster selection.**        
-**•Use techniques to find the optimal configuration.**        
-**•Document the process using an RMarkdown File.**       
-
-
-
-
-
-<strong><u>4. PCA Regression Model Comparisons</u></strong>     
-**•Conduct a PCA regression using your original cluster selection (Part 2 - Baseline PCA Model) and your tuned model (Part 3 - Cluster Select):**      
-**•Use BMI as the outcome variable for the PCA regression. This will Analyze differences in performance using quantitative metrics and discuss possible reasons for the results.**       
-
-
-
-
-
-
-<strong><u>5. Feature Importance Analysis</u></strong>      
-**•Extract and interpret feature importance scores from the PCA regression from the best fitting model.**        
-**•Visualize the top contributing features and discuss their relevance to the dataset.**    
+# 5. Feature Importance Analysis    
+## •Extract and interpret feature importance scores from the PCA regression from the best fitting model.             
+## •Visualize the top contributing features and discuss their relevance to the dataset.        
