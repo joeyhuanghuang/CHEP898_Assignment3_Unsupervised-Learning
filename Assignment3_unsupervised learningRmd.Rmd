@@ -180,7 +180,7 @@ Now we have 1 outcome variable (BMI), 24 continuous independent variables, and 7
 
 Keep the candidates for the above continuous variables and categorical variables.   
 Following the literature, categorical variables (age, income level, alcohol consumption, smoking consumption, diabetes status, hypertension status, Hyperlipidemia status) will be included in our dataset.   
-The 6 categorical variables will be changed to factor in R.
+
 ```{r}
 data_canpath <- data_canpath |> select(ID,
                        PM_BMI_SR,
@@ -214,12 +214,6 @@ data_canpath <- data_canpath |> select(ID,
                        DIS_DIAB_EVER,
                        DIS_HBP_EVER,
                        DIS_ENDO_HB_CHOL_EVER)
-data_canpath$SDC_INCOME <- as.factor(data_canpath$SDC_INCOME)
-data_canpath$SDC_GENDER <- as.factor(data_canpath$SDC_GENDER)
-data_canpath$SMK_CIG_EVER <- as.factor(data_canpath$SMK_CIG_EVER)
-data_canpath$DIS_DIAB_EVER <- as.factor(data_canpath$DIS_DIAB_EVER)
-data_canpath$DIS_HBP_EVER <- as.factor(data_canpath$DIS_HBP_EVER)
-data_canpath$DIS_ENDO_HB_CHOL_EVER <- as.factor(data_canpath$DIS_ENDO_HB_CHOL_EVER)
 ```
 
 
@@ -230,6 +224,9 @@ data_canpath$DIS_ENDO_HB_CHOL_EVER <- as.factor(data_canpath$DIS_ENDO_HB_CHOL_EV
 data_canpath <- data_canpath %>% mutate(SDC_EDU_LEVEL_AGE = if_else(SDC_EDU_LEVEL_AGE < 0, NA_real_, SDC_EDU_LEVEL_AGE))
 data_canpath <- data_canpath %>% mutate(DIS_ARTHRITIS_AGE = if_else(DIS_ARTHRITIS_AGE < 0, NA_real_, DIS_ARTHRITIS_AGE))
 data_canpath <- data_canpath %>% mutate(ALC_CUR_FREQ = if_else(ALC_CUR_FREQ < 0, NA_real_, ALC_CUR_FREQ))
+
+
+
 
 data_canpath <- data_canpath %>%
           mutate(PA_WALK_TIME = case_when(
@@ -250,10 +247,32 @@ data_canpath_clean <- drop_na(data_canpath)
 rm_covsum(data=data_canpath_clean, 
 covs=c('PM_BMI_SR','SDC_AGE_CALC', 'SDC_EDU_LEVEL_AGE', 'DIS_ARTHRITIS_AGE', 'SLE_TIME', 'PSE_CHILDHOOD_DURATION', 'PSE_ADULT_HOME_DURATION', 'PSE_ADULT_WRK_DURATION','PA_WALK_TIME', 'PA_TOTAL_MOD_SHORT', 'PA_TOTAL_WALK_SHORT', 'PA_TOTAL_SHORT', 'PA_SIT_TIME_WKDAY', 'PA_SIT_TIME_WKEND', 'PA_TOTAL_SIT_TIME', 'PA_SIT_AVG_TIME_DAY', 'PM_STAND_HEIGHT_SR_AVG', 'PM_WEIGHT_SR_AVG', 'PM_HIP_SR_AVG', 'PM_WAIST_SR_AVG', 'PM_WAIST_HIP_RATIO_SR', 'NUT_VEG_QTY', 'NUT_FRUITS_QTY', 'NUT_JUICE_QTY', 'ALC_CUR_FREQ', "SDC_INCOME", "SDC_GENDER", "SMK_CIG_EVER", "DIS_DIAB_EVER", "DIS_HBP_EVER", "DIS_ENDO_HB_CHOL_EVER"))
 
-summary(data_canpath_clean$ALC_CUR_FREQ)  
+### The 6 categorical variables will be changed to factor in R.   
+data_canpath$SDC_INCOME <- as.factor(data_canpath$SDC_INCOME)
+data_canpath$SDC_GENDER <- as.factor(data_canpath$SDC_GENDER)
+data_canpath$SMK_CIG_EVER <- as.factor(data_canpath$SMK_CIG_EVER)
+data_canpath$DIS_DIAB_EVER <- as.factor(data_canpath$DIS_DIAB_EVER)
+data_canpath$DIS_HBP_EVER <- as.factor(data_canpath$DIS_HBP_EVER)
+data_canpath$DIS_ENDO_HB_CHOL_EVER <- as.factor(data_canpath$DIS_ENDO_HB_CHOL_EVER)
+
+
+summary(data_canpath$SDC_INCOME) 
+summary(data_canpath$SDC_GENDER) 
+summary(data_canpath$SMK_CIG_EVER) 
+summary(data_canpath$DIS_DIAB_EVER) 
+summary(data_canpath$DIS_HBP_EVER) 
+summary(data_canpath$DIS_ENDO_HB_CHOL_EVER) 
 ```
 
 After deleting the missing data, there are 761 samples left in our dataset.   
+
+data_canpath <- data_canpath %>% mutate(DIS_DIAB_EVER = if_else(DIS_DIAB_EVER >1, NA_real_, DIS_DIAB_EVER))
+
+The 6 categorical variables will be changed to factor in R.   
+```{r}
+
+```
+
 
 **Correlation check:**    
 
@@ -413,13 +432,131 @@ Based on the above cumulative percent variance plot, 4 components can only expla
 
 
 
-
 # 4. PCA Regression Model Comparisons      
 ## •Conduct a PCA regression using your original cluster selection (Part 2 - Baseline PCA Model) and your tuned model (Part 3 - Cluster Select)         
-## •Use BMI as the outcome variable for the PCA regression. This will Analyze differences in performance using quantitative metrics and discuss possible reasons for the results.           
+## •Use BMI as the outcome variable for the PCA regression. This will Analyze differences in performance using quantitative metrics and discuss possible reasons for the results.    
+
+**Data Split**    
+```{r}
+set.seed(10)
+data_split <- initial_split(data_canpath_clean, prop = 0.70)
+
+train_data <- training(data_split)
+summary(train_data$PM_BMI_SR)
+summary(train_data$DIS_DIAB_EVER)
+summary(train_data$DIS_ENDO_HB_CHOL_EVER)
+summary(train_data$SDC_INCOME)
+summary(train_data$SDC_GENDER)
+summary(train_data$SMK_CIG_EVER)
+summary(train_data$DIS_HBP_EVER)
+
+test_data  <- testing(data_split)
+summary(test_data$PM_BMI_SR)
+summary(test_data$DIS_DIAB_EVER)
+summary(test_data$DIS_ENDO_HB_CHOL_EVER)
+summary(test_data$SDC_INCOME)
+summary(test_data$SDC_GENDER)
+summary(test_data$SMK_CIG_EVER)
+summary(test_data$DIS_HBP_EVER)
+```
+
+The data_canpath_clean has been splited to training dataset (70%) and testing dataset (30%) randomly (set seed as 10). After checking the summary for training and testing dataset, their minimum, median, mean, maximum are close.    
+
+We found that DIS_DIAB_EVER and DIS_ENDO_HB_CHOL_EVER variables have level 2 with only 1 observation.
+
+**Model**   
+```{r}
+linear_model <- linear_reg() %>%
+        set_engine("glm") %>%
+        set_mode("regression") 
+```
+
+
+### Baseline PCA Model (including all the PCA components)   
+
+**Recipe**    
+```{r}
+pca_reg_recipe <- recipe(PM_BMI_SR ~., data = train_data) %>%
+  update_role(ID, new_role = "id") %>%
+  step_scale(all_numeric_predictors()) %>%
+  step_center(all_numeric_predictors()) %>%
+  step_pca(all_numeric_predictors(), num_comp=20, id = "pca_id")
+
+pca_reg_recipe
+```
+
+**Workflow**    
+```{r}
+bmi_workflow <- 
+        workflow() %>%
+        add_model(linear_model) %>% 
+        add_recipe(pca_reg_recipe)
+
+bmi_workflow
+```
+
+**Fit a model**
+```{r}
+bmi_fit <- 
+  bmi_workflow %>% 
+  fit(data = train_data)
+```
+
+```{r}
+bmi_fit_extract <- bmi_fit %>% 
+                    extract_fit_parsnip() %>% 
+                    tidy()
+bmi_fit_extract
+```
+
+**Predict on new data**  
+```{r}
+bmi_predicted <- augment(bmi_fit, test_data)
+
+ggplot(bmi_predicted, aes(x = PM_BMI_SR, y = .pred)) +
+  geom_point(alpha = 0.1) +
+  geom_smooth(method = "lm") +
+  labs(x = "Measured BMI", y = "Predicted BMI") +
+  theme_minimal()
+```
 
 
 
+### Tuned model Model (kept components)   
+**Recipe**    
+```{r}
+pca_reg_recipe_tuning <- recipe(PM_BMI_SR ~., data = train_data) %>%
+  update_role(ID, new_role = "id") %>%
+  step_scale(all_numeric_predictors()) %>%
+  step_center(all_numeric_predictors()) %>%
+  step_pca(all_numeric_predictors(), num_comp=4, id = "pca_id")
+
+pca_reg_recipe_tuning
+```
+
+**Workflow**    
+```{r}
+bmi_workflow_tuning <- 
+        workflow() %>%
+        add_model(linear_model) %>% 
+        add_recipe(pca_reg_recipe_tuning)
+
+bmi_workflow_tuning
+```
+
+**Fit a model**
+```{r}
+bmi_fit_tuning <- 
+  bmi_workflow_tuning %>% 
+  fit(data = train_data)
+```
+
+```{r}
+bmi_fit_extract_tuning <- bmi_fit_tuning %>% 
+                    extract_fit_parsnip() %>% 
+                    tidy()
+bmi_fit_extract_tuning
+```
 
 
 
