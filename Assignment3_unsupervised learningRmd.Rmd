@@ -248,29 +248,37 @@ rm_covsum(data=data_canpath_clean,
 covs=c('PM_BMI_SR','SDC_AGE_CALC', 'SDC_EDU_LEVEL_AGE', 'DIS_ARTHRITIS_AGE', 'SLE_TIME', 'PSE_CHILDHOOD_DURATION', 'PSE_ADULT_HOME_DURATION', 'PSE_ADULT_WRK_DURATION','PA_WALK_TIME', 'PA_TOTAL_MOD_SHORT', 'PA_TOTAL_WALK_SHORT', 'PA_TOTAL_SHORT', 'PA_SIT_TIME_WKDAY', 'PA_SIT_TIME_WKEND', 'PA_TOTAL_SIT_TIME', 'PA_SIT_AVG_TIME_DAY', 'PM_STAND_HEIGHT_SR_AVG', 'PM_WEIGHT_SR_AVG', 'PM_HIP_SR_AVG', 'PM_WAIST_SR_AVG', 'PM_WAIST_HIP_RATIO_SR', 'NUT_VEG_QTY', 'NUT_FRUITS_QTY', 'NUT_JUICE_QTY', 'ALC_CUR_FREQ', "SDC_INCOME", "SDC_GENDER", "SMK_CIG_EVER", "DIS_DIAB_EVER", "DIS_HBP_EVER", "DIS_ENDO_HB_CHOL_EVER"))
 
 ### The 6 categorical variables will be changed to factor in R.   
-data_canpath$SDC_INCOME <- as.factor(data_canpath$SDC_INCOME)
-data_canpath$SDC_GENDER <- as.factor(data_canpath$SDC_GENDER)
-data_canpath$SMK_CIG_EVER <- as.factor(data_canpath$SMK_CIG_EVER)
-data_canpath$DIS_DIAB_EVER <- as.factor(data_canpath$DIS_DIAB_EVER)
-data_canpath$DIS_HBP_EVER <- as.factor(data_canpath$DIS_HBP_EVER)
-data_canpath$DIS_ENDO_HB_CHOL_EVER <- as.factor(data_canpath$DIS_ENDO_HB_CHOL_EVER)
+data_canpath_clean$SDC_INCOME <- as.factor(data_canpath_clean$SDC_INCOME)
+data_canpath_clean$SDC_GENDER <- as.factor(data_canpath_clean$SDC_GENDER)
+data_canpath_clean$SMK_CIG_EVER <- as.factor(data_canpath_clean$SMK_CIG_EVER)
+data_canpath_clean$DIS_DIAB_EVER <- as.factor(data_canpath_clean$DIS_DIAB_EVER)
+data_canpath_clean$DIS_HBP_EVER <- as.factor(data_canpath_clean$DIS_HBP_EVER)
+data_canpath_clean$DIS_ENDO_HB_CHOL_EVER <- as.factor(data_canpath_clean$DIS_ENDO_HB_CHOL_EVER)
 
 
-summary(data_canpath$SDC_INCOME) 
-summary(data_canpath$SDC_GENDER) 
-summary(data_canpath$SMK_CIG_EVER) 
-summary(data_canpath$DIS_DIAB_EVER) 
-summary(data_canpath$DIS_HBP_EVER) 
-summary(data_canpath$DIS_ENDO_HB_CHOL_EVER) 
+summary(data_canpath_clean$SDC_INCOME) 
+summary(data_canpath_clean$SDC_GENDER) 
+summary(data_canpath_clean$SMK_CIG_EVER) 
+summary(data_canpath_clean$DIS_DIAB_EVER) 
+summary(data_canpath_clean$DIS_HBP_EVER) 
+summary(data_canpath_clean$DIS_ENDO_HB_CHOL_EVER) 
 ```
 
 After deleting the missing data, there are 761 samples left in our dataset.   
 
-data_canpath <- data_canpath %>% mutate(DIS_DIAB_EVER = if_else(DIS_DIAB_EVER >1, NA_real_, DIS_DIAB_EVER))
+"DIS_DIAB_EVER", "DIS_HBP_EVER", and "DIS_ENDO_HB_CHOL_EVER" variables all have level 2 with only one observation, which is related to persumded disease status. We aims to split training data and testing data, it is better to delete level 2 for those 2 variables.    
 
-The 6 categorical variables will be changed to factor in R.   
+**delete level 2 for "DIS_DIAB_EVER", "DIS_HBP_EVER", and "DIS_ENDO_HB_CHOL_EVER" variables**   
 ```{r}
+data_canpath_clean <- data_canpath_clean %>% mutate(DIS_DIAB_EVER = if_else(DIS_DIAB_EVER =="2", NA_character_, DIS_DIAB_EVER))
+data_canpath_clean <- data_canpath_clean %>% mutate(DIS_DIAB_EVER = if_else(DIS_DIAB_EVER =="2", NA_character_, DIS_DIAB_EVER))
+data_canpath_clean <- data_canpath_clean %>% mutate(DIS_DIAB_EVER = if_else(DIS_DIAB_EVER =="2", NA_character_, DIS_DIAB_EVER))
+### Drop NA
+data_canpath_clean <- drop_na(data_canpath_clean)
 
+summary(data_canpath_clean$DIS_DIAB_EVER) 
+summary(data_canpath_clean$DIS_HBP_EVER) 
+summary(data_canpath_clean$DIS_ENDO_HB_CHOL_EVER) 
 ```
 
 
