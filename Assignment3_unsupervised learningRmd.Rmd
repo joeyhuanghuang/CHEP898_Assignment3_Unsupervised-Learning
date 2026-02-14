@@ -270,12 +270,26 @@ After deleting the missing data, there are 761 samples left in our dataset.
 
 **delete level 2 for "DIS_DIAB_EVER", "DIS_HBP_EVER", and "DIS_ENDO_HB_CHOL_EVER" variables**   
 ```{r}
-data_canpath_clean <- data_canpath_clean %>% mutate(DIS_DIAB_EVER = if_else(DIS_DIAB_EVER =="2", NA_character_, DIS_DIAB_EVER))
-data_canpath_clean <- data_canpath_clean %>% mutate(DIS_DIAB_EVER = if_else(DIS_DIAB_EVER =="2", NA_character_, DIS_DIAB_EVER))
-data_canpath_clean <- data_canpath_clean %>% mutate(DIS_DIAB_EVER = if_else(DIS_DIAB_EVER =="2", NA_character_, DIS_DIAB_EVER))
-### Drop NA
-data_canpath_clean <- drop_na(data_canpath_clean)
+data_canpath <- data_canpath %>% mutate(DIS_DIAB_EVER = if_else(DIS_DIAB_EVER >1, NA_real_, DIS_DIAB_EVER))
+data_canpath <- data_canpath %>% mutate(DIS_HBP_EVER = if_else(DIS_HBP_EVER >1, NA_real_, DIS_HBP_EVER))
+data_canpath <- data_canpath %>% mutate(DIS_ENDO_HB_CHOL_EVER = if_else(DIS_ENDO_HB_CHOL_EVER >1, NA_real_, DIS_ENDO_HB_CHOL_EVER))
 
+
+### Drop NA
+data_canpath_clean <- drop_na(data_canpath)
+
+### The 6 categorical variables will be changed to factor in R.   
+data_canpath_clean$SDC_INCOME <- as.factor(data_canpath_clean$SDC_INCOME)
+data_canpath_clean$SDC_GENDER <- as.factor(data_canpath_clean$SDC_GENDER)
+data_canpath_clean$SMK_CIG_EVER <- as.factor(data_canpath_clean$SMK_CIG_EVER)
+data_canpath_clean$DIS_DIAB_EVER <- as.factor(data_canpath_clean$DIS_DIAB_EVER)
+data_canpath_clean$DIS_HBP_EVER <- as.factor(data_canpath_clean$DIS_HBP_EVER)
+data_canpath_clean$DIS_ENDO_HB_CHOL_EVER <- as.factor(data_canpath_clean$DIS_ENDO_HB_CHOL_EVER)
+
+
+summary(data_canpath_clean$SDC_INCOME) 
+summary(data_canpath_clean$SDC_GENDER) 
+summary(data_canpath_clean$SMK_CIG_EVER) 
 summary(data_canpath_clean$DIS_DIAB_EVER) 
 summary(data_canpath_clean$DIS_HBP_EVER) 
 summary(data_canpath_clean$DIS_ENDO_HB_CHOL_EVER) 
@@ -566,7 +580,16 @@ bmi_fit_extract_tuning <- bmi_fit_tuning %>%
 bmi_fit_extract_tuning
 ```
 
+**Predict on new data**  
+```{r}
+bmi_predicted_tuning <- augment(bmi_fit_tuning, test_data)
 
+ggplot(bmi_predicted_tuning, aes(x = PM_BMI_SR, y = .pred)) +
+  geom_point(alpha = 0.1) +
+  geom_smooth(method = "lm") +
+  labs(x = "Measured BMI", y = "Predicted BMI") +
+  theme_minimal()
+```
 
 # 5. Feature Importance Analysis    
 ## •Extract and interpret feature importance scores from the PCA regression from the best fitting model.             
