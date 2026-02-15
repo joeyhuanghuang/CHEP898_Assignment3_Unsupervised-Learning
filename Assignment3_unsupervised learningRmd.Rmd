@@ -1,7 +1,7 @@
 ---
 title: "Assignment3_Unsupervised Learning"
 author: "Daoyi Huang"
-date: "2026-02-12"
+date: "2026-02-15"
 output: html_document
 ---
 
@@ -12,9 +12,9 @@ output: html_document
 ## •Conduct an initial exploratory data analysis (EDA) to understand key features and relationships.      
 
 In order to predict BMI, we need to identify the potential variables.  
-•First step: Data cleaning
-•Second step: Identify the continuous and categorical variables
-•Third step: Check the correlation between continuous variables. If there are too mang continuos variables identified and there is multicollinearity existed, in order to pass the assumption of the absence of multicollinearity for linear regression model, we need to implement Principal Component Analysis (PCA) to reduce the dimension for the continuous variables and remove the multicollinearity.
+•First step: Data cleaning    
+•Second step: Identify the continuous and categorical variables   
+•Third step: Check the correlation between continuous variables. If there are too mang continuos variables identified and there is multicollinearity existed, in order to pass the assumption of the absence of multicollinearity for linear regression model, we need to implement Principal Component Analysis (PCA) to reduce the dimension for the continuous variables and remove the multicollinearity.   
 
 **load the library **  
 **Import the can_path_data dataset**  
@@ -407,7 +407,7 @@ This component is a combination of different categories of variables.
 -walk perday
 -walk short
 -Age of the participant at first diagnosis of arthritis  
--Alcohol consumption frequency
+-Alcohol consumption frequency    
 **Since there are mixed variables in component 4, it is hard to give it a theme. I just call it mixed factor**   
   
 
@@ -709,7 +709,22 @@ forest_model(lm_engine)
 
 •  The above forest plot visualizes both the statistically significant and non-significant features for the best linear regression model using the original PCA model.       
 
+**Discuss their relevance to the dataset**    
+•  All the categorical variables (income, gender, smoking status,diabetes status, hypertension status, and hyperlipidemia status) are found no statistically correlated with BMI. This may because that we excluded 98% dataset. We might miss lots of information.     
+
+•  Most of the PCs are statistically significant, I was able to give some of them a theme, however, for many of the PCs, it is hard to give them a meaningful theme, because their top contributed variables are mixed.   
+
+•  First PC is physical activity component. Physical activity contributes most in the first PC. This indicates physical activity is a good indicator for predict BMI. Look at the PC, I found that 4 physical activity variables (PA_WALK_TIME, PA_TOTAL_WALK_SHORT, PA_TOTAL_SHORT, PA_TOTAL_MOD_SHORT) with loading value greater than 0.2 and there are other 4 physical activity variables (PA_TOTAL_SIT_TIME, PA_SIT_TIME_WKEND, PA_SIT_TIME_WKDAYPA_SIT_AVG_TIME_DAY) with loading value below -0.2. This indicates sedentary lifestyle performs differently from walk activities, moderate intensity activities, and global physical activities.   
+
+•  Second PC is age-lifestyle component. Age and passive smoking contribute most in second PC. This also makes sense. BMI is affected by people's age and lifestyle.    
+
+•  Third PC is physical measurement component. This includes weight, wsist, and hip circumference measurements. Those physical measurement variables are correlated to people's BMI.    
+
+•  The fifth PC is vegetable and fruit consumption component. This indicates that people's vegetable and fruit consumption is correlated to their BMI. As the PC loading for these variables are greater than 0.2 and regression coefficient for PC5 is -1.09 (-1.35, -0.82), the more fruits and vegetables people consume, the lower their BMI people tends to be.    
+
+• It is difficult to interpret the other PCs, since their top contributors are mixed.   
+
+**In summary**, since there is multicollinearity among our 24 potential continuous independent variables, I implemented the PCA to reduce the dimension of 24 continuous variables and to eliminate the multicollinearity to meet the assumption for the linear regression model. I got one baseline PCA model, and the tuning PCA model using cluser selection based on the elbow method. Then two PCA regression models were built using the training dataset. I compared these 2 PCA regression model using multiple method using testing dataset, including diagnosic visualization plots, coefficient determination (RSQ) and Root Mean Squared Error (RMSE). The PCA regression model using the baseline PCA model is a better model. This make sense. Because the tuning PCA molde with 4 components only explains 44% of vriation. It is better to used the baseline component to build the PCA regression model. For the significant variables, the physical activity component (PC1), age-lifestyle component (PC2), physical measurement component (PC3), and vegetable and fruit consumption component (PC5) are statistically significant. However, none of the categorical variables are found statistically significant.   
 
 
-
-
+**Limitation:** Since he normality assumption is violated for both PCA regression models, the result for both models is not reliable. 
