@@ -5,6 +5,7 @@ date: "2026-02-12"
 output: html_document
 ---
 
+**I will use a significant level of 0.05 in this assignment.**    
 
 # 1. Dataset Exploration</u></strong>      
 ## •Load and examine the Can Path Student Dataset (Not Imputed).  
@@ -40,6 +41,7 @@ library(corrr)
 library(performance)
 library(utils)
 library(see)
+library(forestmodel)
 data_canpath<-read.csv("/Users/xiehuangbao/Library/CloudStorage/OneDrive-UniversityofSaskatchewan/Study at USask/CHEP898_Machine Learning/can_path_data.csv")
 ```
 
@@ -591,6 +593,123 @@ ggplot(bmi_predicted_tuning, aes(x = PM_BMI_SR, y = .pred)) +
   theme_minimal()
 ```
 
+### Model evaluation (compare these 2 linear regression models)   
+• Based on the two ggplots for measured BMI and predicated BMI from the 2 linear regression model using the original and tuning model, the dots are quite deviated from the line. In addition, the slopes of both the lines are smaller than 45°. Overall, both the 2 models perform similarly in predicting the BMI, and they do not predict the BMI very well. It is hard to tell which is better than another. We need to do more model evaluation to figure out which one is better.
+
+**Diagnostic visulization**
+```{r}
+## linear regression model using the original PCA model
+bmi_fit |> 
+  extract_fit_engine() |> 
+  check_model()
+```
+```{r}
+## linear regression model using the tuning PCA model (4 components)
+bmi_fit_tuning |> 
+  extract_fit_engine() |> 
+  check_model()
+```
+• Firstly, for both the 2 models, the normality of residuals plots show that the dots did not fall along the line well. I suspect that the normality assumption for both models are violated. In addition, for the regression model using the original PCA model, the assumption of Homogeneity is violated. Technically, their result are not trustworthy for me.       
+
+• Secondly, based on the posterior predictive check plot, the linear regression model using the original PCA model might be slightly better than the one using tuning one.     
+
+**Root Mean Squared Error**   
+```{r}
+## linear regression model using the original PCA model
+rsq_test<- yardstick::rsq(data=bmi_predicted, truth = PM_BMI_SR,
+         estimate = .pred)
+
+rmse_test<- yardstick::rmse(data=bmi_predicted, truth = PM_BMI_SR,
+         estimate = .pred)
+
+rsq_test
+rmse_test
+```
+
+```{r}
+## linear regression model using the tuning PCA model
+rsq_test<- yardstick::rsq(data=bmi_predicted_tuning, truth = PM_BMI_SR,
+         estimate = .pred)
+
+rmse_test<- yardstick::rmse(data=bmi_predicted_tuning, truth = PM_BMI_SR,
+         estimate = .pred)
+
+rsq_test
+rmse_test
+```
+
+• The above tables show the coefficient determination (RSQ) and Root Mean Squared Error (RMSE) for testing dataset.  
+• The RSQ of the linear regression model using the original PCA model is 0.507 which is higher than the one of using the tuning PCA model, which is 0.349. This indicates that the linear regression model using the original PCA model is a better model than the one using tuning PCA model. It can explain 50.7% of variation of the outcome variables.   
+• The RMSE of the linear regression model using the original PCA model is 4.47 which is lower than the one of using the tuning PCA model, which is 5.08. Since lower RMSE, the better this model fits a dataset. So this indicates that the linear regression model using the original PCA model is a better model than the one using tuning PCA model.   
+• Overall, based on the ggplots for measured BMI and predicated BMI, diagnositc visualization plots, RSQ, and RMSE based on the testing dataset, the linear regression model using the original (baseline) PCA model is a better model than the one using the tuning PCA model.     
+
 # 5. Feature Importance Analysis    
-## •Extract and interpret feature importance scores from the PCA regression from the best fitting model.             
-## •Visualize the top contributing features and discuss their relevance to the dataset.        
+## •Extract and interpret feature importance scores from the PCA regression from the best fitting model.              
+## •Visualize the top contributing features and discuss their relevance to the dataset.   
+
+**Our best PCA regression is the one using the original PCA model**
+**Final model**   
+```{r}
+bmi_fit <- 
+  bmi_workflow %>% 
+  fit(data = train_data)
+```
+
+```{r}
+bmi_fit_extract <- bmi_fit %>% 
+                    extract_fit_parsnip() %>% 
+                    tidy()
+bmi_fit_extract
+```
+
+• From the above plots, I found all the categorical variables are not statistically significant. Most of the pricipal components are statistically significant (PC01, 02, 03, 05, 06, 07, 08, 09, 12, 13, 14, 15, 16, 18).    
+
+**Check the PCA loading again**   
+**Component loadings**  
+```{r}
+pca_variables <- tidy(pca_prepared, id = "pca_id", type = "coef")
+
+ggplot(pca_variables) +
+  geom_point(aes(x = value, y = terms, color = component))+
+  labs(color = NULL) +
+  geom_vline(xintercept=0) + 
+  geom_vline(xintercept=-0.2, linetype = 'dashed') + 
+  geom_vline(xintercept=0.2, linetype = 'dashed') + 
+  facet_wrap(~ component) +
+  theme_minimal()
+ggsave("pca_loadings.pdf", width = 12, height = 14)
+```
+
+• I gave all the statistically significant PC a theme based on the variables which contribute most in each component.     
+**Note:** The above PCA loading plot in the R is very difficult to figure out the variables. However, we can save the plot as PDF and we can identify the factors easily (I have also submitted the saved PDF in the Canvas).       
+
+• PCA1: physical activity component        
+• PCA2: age-lifestyle component       
+• PCA3: physical measurement component        
+• PCA5: vegetable and fruit consumption component   
+• PCA6: mixed combination component   
+• PCA7: mixed combination component     
+• PCA8: mixed combination component   
+• PCA9: mixed combination component   
+• PCA12: mixed combination component    
+• PCA13: mixed combination component    
+• PCA14: mixed combination component    
+• PCA15: mixed combination component    
+• PCA16: mixed combination component    
+• PCA518: mixed combination component       
+
+**Visualize the top contributing features**   
+**Forest plot**    
+```{r}
+### Best linear regression model using the original PCA model
+lm_engine <- bmi_fit %>% extract_fit_engine()
+forest_model(lm_engine)
+```
+
+
+•  The above forest plot visualizes both the statistically significant and non-significant features for the best linear regression model using the original PCA model.       
+
+
+
+
+
