@@ -1,6 +1,8 @@
 # CHEP_Assignment3_Unsupervised-Learning
 CHEP_Assignment3_Unsupervised Learning
 
+My Repositories: https://github.com/joeyhuanghuang/CHEP898_Assignment3_Unsupervised-Learning.git
+
 <strong><u>Assignment Tasks</u></strong>
 
 **1. Dataset Exploration**
